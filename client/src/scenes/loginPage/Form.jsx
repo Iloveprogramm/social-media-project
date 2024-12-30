@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
-import FlexBetween from "components/FlexBetween";
 import { ClipLoader } from "react-spinners"; // 用于加载动画
 
 const registerSchema = yup.object().shape({
@@ -138,15 +137,32 @@ const Form = () => {
       }) => (
         <form onSubmit={handleSubmit}>
           <Box
-            display="grid"
-            gap="30px"
-            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
             sx={{
-              "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+              backgroundColor: "rgba(255, 255, 255, 0.85)",
+              borderRadius: "15px",
+              padding: "3rem",
+              boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+              maxWidth: "500px",
+              margin: "0 auto",
             }}
           >
+            <Typography
+              variant="h4"
+              sx={{
+                mb: "1.5rem",
+                fontWeight: "bold",
+                color: palette.primary.dark,
+              }}
+            >
+              {isLogin ? "Login to Your Account" : "Create an Account"}
+            </Typography>
+
             {isRegister && (
-              <>
+              <Box display="grid" gridTemplateColumns="1fr 1fr" gap="1rem" sx={{ width: "100%" }}>
                 <TextField
                   label="First Name"
                   onBlur={handleBlur}
@@ -157,7 +173,6 @@ const Form = () => {
                     Boolean(touched.firstName) && Boolean(errors.firstName)
                   }
                   helperText={touched.firstName && errors.firstName}
-                  sx={{ gridColumn: "span 2" }}
                 />
                 <TextField
                   label="Last Name"
@@ -167,64 +182,78 @@ const Form = () => {
                   name="lastName"
                   error={Boolean(touched.lastName) && Boolean(errors.lastName)}
                   helperText={touched.lastName && errors.lastName}
-                  sx={{ gridColumn: "span 2" }}
                 />
-                <TextField
-                  label="Location"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.location}
-                  name="location"
-                  error={Boolean(touched.location) && Boolean(errors.location)}
-                  helperText={touched.location && errors.location}
-                  sx={{ gridColumn: "span 4" }}
-                />
-                <TextField
-                  label="Occupation"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.occupation}
-                  name="occupation"
-                  error={
-                    Boolean(touched.occupation) && Boolean(errors.occupation)
-                  }
-                  helperText={touched.occupation && errors.occupation}
-                  sx={{ gridColumn: "span 4" }}
-                />
-                <Box
-                  gridColumn="span 4"
-                  border={`1px solid ${palette.neutral.medium}`}
-                  borderRadius="5px"
-                  p="1rem"
+              </Box>
+            )}
+
+            {isRegister && (
+              <TextField
+                label="Location"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.location}
+                name="location"
+                error={Boolean(touched.location) && Boolean(errors.location)}
+                helperText={touched.location && errors.location}
+                fullWidth
+                sx={{ mt: "1rem" }}
+              />
+            )}
+
+            {isRegister && (
+              <TextField
+                label="Occupation"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.occupation}
+                name="occupation"
+                error={
+                  Boolean(touched.occupation) && Boolean(errors.occupation)
+                }
+                helperText={touched.occupation && errors.occupation}
+                fullWidth
+                sx={{ mt: "1rem" }}
+              />
+            )}
+
+            {isRegister && (
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "56px",
+                  borderRadius: "4px",
+                  border: `1px solid ${palette.neutral.medium}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "0 1rem",
+                  backgroundColor: "white",
+                  cursor: "pointer",
+                  "&:hover": { borderColor: palette.primary.main },
+                  mt: "1rem",
+                }}
+              >
+                <Dropzone
+                  acceptedFiles=".jpg,.jpeg,.png"
+                  multiple={false}
+                  onDrop={(acceptedFiles) => setFieldValue("picture", acceptedFiles[0])}
                 >
-                  <Dropzone
-                    acceptedFiles=".jpg,.jpeg,.png"
-                    multiple={false}
-                    onDrop={(acceptedFiles) =>
-                      setFieldValue("picture", acceptedFiles[0])
-                    }
-                  >
-                    {({ getRootProps, getInputProps }) => (
-                      <Box
-                        {...getRootProps()}
-                        border={`2px dashed ${palette.primary.main}`}
-                        p="1rem"
-                        sx={{ "&:hover": { cursor: "pointer" } }}
+                  {({ getRootProps, getInputProps }) => (
+                    <Box {...getRootProps()} sx={{ flex: 1 }}>
+                      <input {...getInputProps()} />
+                      <Typography
+                        sx={{
+                          color: values.picture ? palette.text.primary : palette.neutral.medium,
+                          fontSize: "0.9rem",
+                        }}
                       >
-                        <input {...getInputProps()} />
-                        {!values.picture ? (
-                          <p>Add Picture Here</p>
-                        ) : (
-                          <FlexBetween>
-                            <Typography>{values.picture.name}</Typography>
-                            <EditOutlinedIcon />
-                          </FlexBetween>
-                        )}
-                      </Box>
-                    )}
-                  </Dropzone>
-                </Box>
-              </>
+                        {values.picture ? values.picture.name : "Click to add a picture"}
+                      </Typography>
+                    </Box>
+                  )}
+                </Dropzone>
+                {values.picture && <EditOutlinedIcon sx={{ color: palette.primary.main }} />}
+              </Box>
             )}
 
             <TextField
@@ -235,7 +264,8 @@ const Form = () => {
               name="email"
               error={Boolean(touched.email) && Boolean(errors.email)}
               helperText={touched.email && errors.email}
-              sx={{ gridColumn: "span 4" }}
+              fullWidth
+              sx={{ mt: "1rem" }}
             />
             <TextField
               label="Password"
@@ -246,21 +276,23 @@ const Form = () => {
               name="password"
               error={Boolean(touched.password) && Boolean(errors.password)}
               helperText={touched.password && errors.password}
-              sx={{ gridColumn: "span 4" }}
+              fullWidth
+              sx={{ mt: "1rem" }}
             />
-          </Box>
 
-          {/* BUTTONS */}
-          <Box>
             <Button
               fullWidth
               type="submit"
               sx={{
-                m: "2rem 0",
-                p: "1rem",
-                backgroundColor: palette.primary.main,
-                color: palette.background.alt,
-                "&:hover": { color: palette.primary.main },
+                mt: "2rem",
+                py: "0.75rem",
+                fontWeight: "bold",
+                color: "white",
+                background: "linear-gradient(90deg, #667eea, #764ba2)",
+                borderRadius: "10px",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #764ba2, #667eea)",
+                },
               }}
               disabled={isSubmitting} // 禁用按钮以避免重复提交
             >
@@ -279,10 +311,13 @@ const Form = () => {
                 resetForm();
               }}
               sx={{
+                mt: "1.5rem",
+                textAlign: "center",
                 textDecoration: "underline",
                 color: palette.primary.main,
+                fontWeight: "500",
+                cursor: "pointer",
                 "&:hover": {
-                  cursor: "pointer",
                   color: palette.primary.light,
                 },
               }}
