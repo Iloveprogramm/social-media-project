@@ -3,34 +3,34 @@ import {
   Box,
   Button,
   TextField,
-  useMediaQuery,
   Typography,
   useTheme,
 } from "@mui/material";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
-import { ClipLoader } from "react-spinners"; // 用于加载动画
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
+// 验证模式
 const registerSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
-  location: yup.string().required("required"),
-  occupation: yup.string().required("required"),
-  picture: yup.string().required("required"),
+  firstName: yup.string().required("Required"),
+  lastName: yup.string().required("Required"),
+  email: yup.string().email("Invalid email").required("Required"),
+  password: yup.string().required("Required"),
+  location: yup.string().required("Required"),
+  occupation: yup.string().required("Required"),
+  picture: yup.string().required("Required"),
 });
 
 const loginSchema = yup.object().shape({
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
+  email: yup.string().email("Invalid email").required("Required"),
+  password: yup.string().required("Required"),
 });
 
+// 初始值
 const initialValuesRegister = {
   firstName: "",
   lastName: "",
@@ -48,19 +48,18 @@ const initialValuesLogin = {
 
 const Form = () => {
   const [pageType, setPageType] = useState("login");
+  const [passwordError, setPasswordError] = useState(""); // 用于保存密码错误信息
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isNonMobile = useMediaQuery("(min-width:600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
 
-  const [isSubmitting, setIsSubmitting] = useState(false); // 新增状态
-
   const register = async (values, onSubmitProps) => {
-    setIsSubmitting(true); // 开始动画
+    setPasswordError("");
+    setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 模拟 2 秒延迟
       const formData = new FormData();
       for (let value in values) {
         formData.append(value, values[value]);
@@ -83,20 +82,31 @@ const Form = () => {
     } catch (error) {
       console.error("Registration error:", error);
     } finally {
-      setIsSubmitting(false); // 停止动画
+      setIsSubmitting(false);
     }
   };
 
   const login = async (values, onSubmitProps) => {
-    setIsSubmitting(true); // 开始动画
+    setPasswordError(""); // 清空错误信息
+    setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 模拟 2 秒延迟
-      const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
+      const response = await fetch("http://localhost:3001/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      const loggedIn = await loggedInResponse.json();
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.message === "Invalid password") {
+          setPasswordError("Wrong Password， Please Try Again。");
+        } else {
+          setPasswordError("Login Fail， Please Check your information。");
+        }
+        return;
+      }
+
+      const loggedIn = await response.json();
       onSubmitProps.resetForm();
       if (loggedIn) {
         dispatch(
@@ -109,8 +119,9 @@ const Form = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
+      setPasswordError("Network Error, Please try again later。");
     } finally {
-      setIsSubmitting(false); // 停止动画
+      setIsSubmitting(false);
     }
   };
 
@@ -133,7 +144,6 @@ const Form = () => {
         handleChange,
         handleSubmit,
         setFieldValue,
-        resetForm,
       }) => (
         <form onSubmit={handleSubmit}>
           <Box
@@ -169,9 +179,7 @@ const Form = () => {
                   onChange={handleChange}
                   value={values.firstName}
                   name="firstName"
-                  error={
-                    Boolean(touched.firstName) && Boolean(errors.firstName)
-                  }
+                  error={Boolean(touched.firstName) && Boolean(errors.firstName)}
                   helperText={touched.firstName && errors.firstName}
                 />
                 <TextField
@@ -228,15 +236,15 @@ const Form = () => {
                   justifyContent: "space-between",
                   padding: "0 1rem",
                   backgroundColor: "white",
-                  cursor: "pointer",
-                  "&:hover": { borderColor: palette.primary.main },
                   mt: "1rem",
                 }}
               >
                 <Dropzone
                   acceptedFiles=".jpg,.jpeg,.png"
                   multiple={false}
-                  onDrop={(acceptedFiles) => setFieldValue("picture", acceptedFiles[0])}
+                  onDrop={(acceptedFiles) =>
+                    setFieldValue("picture", acceptedFiles[0])
+                  }
                 >
                   {({ getRootProps, getInputProps }) => (
                     <Box {...getRootProps()} sx={{ flex: 1 }}>
@@ -244,10 +252,11 @@ const Form = () => {
                       <Typography
                         sx={{
                           color: values.picture ? palette.text.primary : palette.neutral.medium,
-                          fontSize: "0.9rem",
                         }}
                       >
-                        {values.picture ? values.picture.name : "Click to add a picture"}
+                        {values.picture
+                          ? values.picture.name
+                          : "Click to add a picture"}
                       </Typography>
                     </Box>
                   )}
@@ -267,6 +276,7 @@ const Form = () => {
               fullWidth
               sx={{ mt: "1rem" }}
             />
+
             <TextField
               label="Password"
               type="password"
@@ -275,11 +285,22 @@ const Form = () => {
               value={values.password}
               name="password"
               error={Boolean(touched.password) && Boolean(errors.password)}
-              helperText={touched.password && errors.password}
-              fullWidth
-              sx={{ mt: "1rem" }}
-            />
-
+              helperText={
+              (passwordError || (touched.password && errors.password)) && (
+               <span
+                 style={{
+                    color: "red", // 红色提示
+                      fontSize: "0.875rem", // 字体稍微小一点（正常大小）
+                       fontWeight: "normal", // 正常粗细
+               }}
+            >
+        {passwordError || errors.password}
+      </span>
+    )
+  }
+  fullWidth
+  sx={{ mt: "1rem" }}
+/>
             <Button
               fullWidth
               type="submit"
@@ -290,36 +311,26 @@ const Form = () => {
                 color: "white",
                 background: "linear-gradient(90deg, #667eea, #764ba2)",
                 borderRadius: "10px",
-                "&:hover": {
-                  background: "linear-gradient(90deg, #764ba2, #667eea)",
-                },
               }}
-              disabled={isSubmitting} // 禁用按钮以避免重复提交
+              disabled={isSubmitting}
             >
-              {isLogin ? "LOGIN" : "REGISTER"}
+              {isSubmitting
+                ? isLogin
+                  ? "Logging in..."
+                  : "Registering..."
+                : isLogin
+                ? "LOGIN"
+                : "REGISTER"}
             </Button>
 
-            {isSubmitting && (
-              <Box display="flex" justifyContent="center" mt="1rem">
-                <ClipLoader color={palette.primary.main} size={30} />
-              </Box>
-            )}
-
             <Typography
-              onClick={() => {
-                setPageType(isLogin ? "register" : "login");
-                resetForm();
-              }}
+              onClick={() => setPageType(isLogin ? "register" : "login")}
               sx={{
                 mt: "1.5rem",
                 textAlign: "center",
                 textDecoration: "underline",
                 color: palette.primary.main,
-                fontWeight: "500",
                 cursor: "pointer",
-                "&:hover": {
-                  color: palette.primary.light,
-                },
               }}
             >
               {isLogin
