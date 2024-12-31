@@ -5,28 +5,48 @@ import PostWidget from "./PostWidget";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
+  const posts = useSelector((state) => state.posts); // Redux 状态中的 posts
   const token = useSelector((state) => state.token);
 
   const getPosts = async () => {
-    const response = await fetch("http://localhost:3001/posts", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    try {
+      const response = await fetch("http://localhost:3001/posts", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        dispatch(setPosts({ posts: data }));
+      } else {
+        console.error("Posts data is not an array:", data);
+        dispatch(setPosts({ posts: [] })); // 确保状态是数组
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
   };
 
   const getUserPosts = async () => {
-    const response = await fetch(
-      `http://localhost:3001/posts/${userId}/posts`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+    try {
+      const response = await fetch(
+        `http://localhost:3001/posts/${userId}/posts`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        dispatch(setPosts({ posts: data }));
+      } else {
+        console.error("User posts data is not an array:", data);
+        dispatch(setPosts({ posts: [] })); // 确保状态是数组
       }
-    );
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+    }
   };
 
   useEffect(() => {
@@ -36,6 +56,10 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       getPosts();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!Array.isArray(posts)) {
+    return <div>Loading posts...</div>;
+  }
 
   return (
     <>
@@ -53,7 +77,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           comments,
         }) => (
           <PostWidget
-            key={_id}
+            key={_id} // 唯一 key
             postId={_id}
             postUserId={userId}
             name={`${firstName} ${lastName}`}

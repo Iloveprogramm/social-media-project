@@ -3,7 +3,6 @@ import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
   ShareOutlined,
-  DeleteOutline,
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
@@ -11,7 +10,7 @@ import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost, deletePost } from "state";
+import { setPost } from "state";
 
 const PostWidget = ({
   postId,
@@ -21,60 +20,53 @@ const PostWidget = ({
   location,
   picturePath,
   userPicturePath,
-  likes,
-  comments,
+  likes = {}, // 默认值为空对象
+  comments = [], // 默认值为空数组
 }) => {
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
-  const isLiked = Boolean(likes[loggedInUserId]);
-  const likeCount = Object.keys(likes).length;
+  const isLiked = likes && Boolean(likes[loggedInUserId]);
+  const likeCount = likes ? Object.keys(likes).length : 0;
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
   const patchLike = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: loggedInUserId }),
-    });
-    const updatedPost = await response.json();
-    dispatch(setPost({ post: updatedPost }));
-  };
+    try {
+      const response = await fetch(
+        `http://localhost:3001/posts/${postId}/like`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: loggedInUserId }),
+        }
+      );
 
-  const handleDelete = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.ok) {
-      dispatch(deletePost({ postId }));
+      if (response.ok) {
+        const updatedPost = await response.json();
+        dispatch(setPost({ post: updatedPost }));
+      } else {
+        console.error("Failed to like the post");
+      }
+    } catch (error) {
+      console.error("Error liking the post:", error);
     }
   };
 
   return (
     <WidgetWrapper m="2rem 0">
-      <FlexBetween>
-        <Friend
-          friendId={postUserId}
-          name={name}
-          subtitle={location}
-          userPicturePath={userPicturePath}
-        />
-        {loggedInUserId === postUserId && (
-          <IconButton onClick={handleDelete}>
-            <DeleteOutline sx={{ color: main }} />
-          </IconButton>
-        )}
-      </FlexBetween>
+      <Friend
+        friendId={postUserId || ""}
+        name={name || "Unknown"}
+        subtitle={location || "Unknown"}
+        userPicturePath={userPicturePath || ""}
+      />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
       </Typography>
@@ -104,7 +96,9 @@ const PostWidget = ({
             <IconButton onClick={() => setIsComments(!isComments)}>
               <ChatBubbleOutlineOutlined />
             </IconButton>
-            <Typography>{comments.length}</Typography>
+            <Typography>
+              {Array.isArray(comments) ? comments.length : 0}
+            </Typography>
           </FlexBetween>
         </FlexBetween>
 
@@ -114,14 +108,15 @@ const PostWidget = ({
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
-            </Box>
-          ))}
+          {Array.isArray(comments) &&
+            comments.map((comment, i) => (
+              <Box key={`${postId}-${i}`}> {/* 唯一 key */}
+                <Divider />
+                <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+                  {comment}
+                </Typography>
+              </Box>
+            ))}
           <Divider />
         </Box>
       )}
