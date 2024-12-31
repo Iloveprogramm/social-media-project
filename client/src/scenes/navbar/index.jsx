@@ -75,8 +75,9 @@ const Navbar = () => {
             backgroundColor="#ffffff33" // 半透明白背景
             borderRadius="9px"
             padding="0.1rem 1.5rem"
+            sx={{ width: "400px" }} // 调整搜索框宽度
           >
-            <InputBase placeholder="Search..." sx={{ color: "#fff" }} />
+            <InputBase placeholder="Search..." sx={{ color: "#fff", width: "100%" }} />
             <IconButton>
               <Search sx={{ color: "#fff" }} />
             </IconButton>

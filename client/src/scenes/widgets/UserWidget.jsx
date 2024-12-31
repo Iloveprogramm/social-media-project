@@ -52,7 +52,11 @@ const UserWidget = ({ userId, picturePath }) => {
     <WidgetWrapper>
       {/* 用户信息 */}
       <FlexBetween gap="0.5rem" pb="1.1rem">
-        <FlexBetween gap="1rem">
+        <FlexBetween
+          gap="1rem"
+          onClick={() => navigate(`/profile/${userId}`)}
+          sx={{ cursor: "pointer" }}
+        >
           <UserImage image={picturePath} />
           <Box>
             <Typography
