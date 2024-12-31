@@ -3,6 +3,7 @@ import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
   ShareOutlined,
+  DeleteOutline,
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
@@ -10,7 +11,7 @@ import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost, setPosts } from "state";
 
 const PostWidget = ({
   postId,
@@ -20,13 +21,14 @@ const PostWidget = ({
   location,
   picturePath,
   userPicturePath,
-  likes = {}, // 默认值为空对象
-  comments = [], // 默认值为空数组
+  likes = {},
+  comments = [],
 }) => {
   const [isComments, setIsComments] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+  const posts = useSelector((state) => state.posts);
   const isLiked = likes && Boolean(likes[loggedInUserId]);
   const likeCount = likes ? Object.keys(likes).length : 0;
 
@@ -56,6 +58,25 @@ const PostWidget = ({
       }
     } catch (error) {
       console.error("Error liking the post:", error);
+    }
+  };
+
+  const deletePost = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        dispatch(setPosts({ posts: posts.filter((post) => post._id !== postId) }));
+      } else {
+        console.error("Failed to delete the post");
+      }
+    } catch (error) {
+      console.error("Error deleting the post:", error);
     }
   };
 
@@ -102,15 +123,22 @@ const PostWidget = ({
           </FlexBetween>
         </FlexBetween>
 
-        <IconButton>
-          <ShareOutlined />
-        </IconButton>
+        <FlexBetween gap="0.3rem">
+          {loggedInUserId === postUserId && (
+            <IconButton onClick={deletePost}>
+              <DeleteOutline sx={{ color: "red" }} />
+            </IconButton>
+          )}
+          <IconButton>
+            <ShareOutlined />
+          </IconButton>
+        </FlexBetween>
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
           {Array.isArray(comments) &&
             comments.map((comment, i) => (
-              <Box key={`${postId}-${i}`}> {/* 唯一 key */}
+              <Box key={`${postId}-${i}`}>
                 <Divider />
                 <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
                   {comment}
