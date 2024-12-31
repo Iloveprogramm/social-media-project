@@ -1,3 +1,4 @@
+// Form.jsx
 import { useState } from "react";
 import {
   Box,
@@ -99,9 +100,9 @@ const Form = () => {
       if (!response.ok) {
         const errorData = await response.json();
         if (errorData.message === "Invalid password") {
-          setPasswordError("Wrong Password， Please Try Again。");
+          setPasswordError("Wrong Password, Please Try Again.");
         } else {
-          setPasswordError("Login Fail， Please Check your information。");
+          setPasswordError("Login Failed, Please Check Your Information.");
         }
         return;
       }
@@ -119,7 +120,7 @@ const Form = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setPasswordError("Network Error, Please try again later。");
+      setPasswordError("Network Error, Please Try Again Later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -152,7 +153,7 @@ const Form = () => {
             alignItems="center"
             justifyContent="center"
             sx={{
-              backgroundColor: "rgba(255, 255, 255, 0.85)",
+              backgroundColor: palette.mode === "dark" ? "#000" : "rgba(255, 255, 255, 0.85)",
               borderRadius: "15px",
               padding: "3rem",
               boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
@@ -165,7 +166,7 @@ const Form = () => {
               sx={{
                 mb: "1.5rem",
                 fontWeight: "bold",
-                color: palette.primary.dark,
+                color: palette.primary.main,
               }}
             >
               {isLogin ? "Login to Your Account" : "Create an Account"}
@@ -181,6 +182,8 @@ const Form = () => {
                   name="firstName"
                   error={Boolean(touched.firstName) && Boolean(errors.firstName)}
                   helperText={touched.firstName && errors.firstName}
+                  InputLabelProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+                  InputProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
                 />
                 <TextField
                   label="Last Name"
@@ -190,6 +193,8 @@ const Form = () => {
                   name="lastName"
                   error={Boolean(touched.lastName) && Boolean(errors.lastName)}
                   helperText={touched.lastName && errors.lastName}
+                  InputLabelProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+                  InputProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
                 />
               </Box>
             )}
@@ -205,6 +210,8 @@ const Form = () => {
                 helperText={touched.location && errors.location}
                 fullWidth
                 sx={{ mt: "1rem" }}
+                InputLabelProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+                InputProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
               />
             )}
 
@@ -215,12 +222,12 @@ const Form = () => {
                 onChange={handleChange}
                 value={values.occupation}
                 name="occupation"
-                error={
-                  Boolean(touched.occupation) && Boolean(errors.occupation)
-                }
+                error={Boolean(touched.occupation) && Boolean(errors.occupation)}
                 helperText={touched.occupation && errors.occupation}
                 fullWidth
                 sx={{ mt: "1rem" }}
+                InputLabelProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+                InputProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
               />
             )}
 
@@ -235,7 +242,7 @@ const Form = () => {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "0 1rem",
-                  backgroundColor: "white",
+                  backgroundColor: palette.mode === "dark" ? "#424242" : "white",
                   mt: "1rem",
                 }}
               >
@@ -275,6 +282,8 @@ const Form = () => {
               helperText={touched.email && errors.email}
               fullWidth
               sx={{ mt: "1rem" }}
+              InputLabelProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+              InputProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
             />
 
             <TextField
@@ -285,22 +294,13 @@ const Form = () => {
               value={values.password}
               name="password"
               error={Boolean(touched.password) && Boolean(errors.password)}
-              helperText={
-              (passwordError || (touched.password && errors.password)) && (
-               <span
-                 style={{
-                    color: "red", // 红色提示
-                      fontSize: "0.875rem", // 字体稍微小一点（正常大小）
-                       fontWeight: "normal", // 正常粗细
-               }}
-            >
-        {passwordError || errors.password}
-      </span>
-    )
-  }
-  fullWidth
-  sx={{ mt: "1rem" }}
-/>
+              helperText={passwordError || (touched.password && errors.password)}
+              fullWidth
+              sx={{ mt: "1rem" }}
+              InputLabelProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+              InputProps={{ style: { color: palette.mode === "dark" ? "#FFF" : "#000" } }}
+            />
+
             <Button
               fullWidth
               type="submit"
@@ -308,19 +308,15 @@ const Form = () => {
                 mt: "2rem",
                 py: "0.75rem",
                 fontWeight: "bold",
-                color: "white",
-                background: "linear-gradient(90deg, #667eea, #764ba2)",
+                color: palette.primary.contrastText,
+                background: palette.mode === "dark"
+                  ? "linear-gradient(90deg, #334e68, #102a43)"
+                  : "linear-gradient(90deg, #667eea, #764ba2)",
                 borderRadius: "10px",
               }}
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? isLogin
-                  ? "Logging in..."
-                  : "Registering..."
-                : isLogin
-                ? "LOGIN"
-                : "REGISTER"}
+              {isSubmitting ? (isLogin ? "Logging in..." : "Registering...") : isLogin ? "LOGIN" : "REGISTER"}
             </Button>
 
             <Typography
