@@ -1,47 +1,55 @@
-# MERN Stack Social Media App
-## Project Name：SocialAura
+# SocialAura - MERN Stack Social Media App
 
 ## Project Overview
 
-This is a full-stack social media application built using the MERN stack. The project includes the following features:
+SocialAura is a full-stack social media application built with the MERN stack. It provides a modern, user-friendly interface for users to connect, share, and interact. Key features include user authentication, profile customization, post creation, dark mode, and more.
 
-- User authentication (login and registration).
-- Users can create posts and like others' posts.
-- Responsive design with support for dark mode.
-- File upload functionality (e.g., profile pictures or images).
+### Key Features:
+
+- **User Authentication**: Login and registration functionality.
+- **Profile Customization**: Users can edit their name, profession, and location directly on the main page.
+- **Friend Management**: Add or remove friends from your connections list.
+- **Post Management**:
+  - Create, edit, and delete posts.
+  - Like and comment on posts from other users.
+- **Dark Mode**: Toggle between dark and light themes.
+- **Logout Functionality**: Securely log out of the application.
+- **Responsive Design**: Fully optimized for different devices and screen sizes.
+
+---
 
 ## Tech Stack
 
 ### Frontend:
 
 - **React**: For building the user interface.
-- **Material-UI**: A modern, responsive component library.
-- **Redux Toolkit**: For global state management.
-- **Redux Persist**: For state persistence.
-- **React Router**: For routing management.
-- **Formik & Yup**: For form handling and validation.
+- **Material-UI**: A responsive and modern component library.
+- **Redux Toolkit**: Global state management.
+- **Redux Persist**: To persist state across sessions.
+- **React Router**: For navigation and routing.
+- **Formik & Yup**: Form handling and validation.
 
 ### Backend:
 
-- **Node.js**: Runtime environment.
-- **Express.js**: For building APIs.
-- **Mongoose**: For connecting to and interacting with the MongoDB database.
-- **JsonWebToken**: For user authentication.
-- **Multer & GridFS**: For handling file uploads.
+- **Node.js**: Backend runtime environment.
+- **Express.js**: Web framework for building APIs.
+- **Mongoose**: MongoDB object modeling.
+- **JsonWebToken (JWT)**: Secure user authentication.
+- **Multer & GridFS**: File uploads and storage.
 
 ### Database:
 
-- **MongoDB**: For data storage.
+- **MongoDB**: Database for storing user and post data.
 
-### Tools & Others:
+### Tools & Libraries:
 
-- **dotenv**: For managing environment variables.
+- **dotenv**: Environment variable management.
+- **Google Fonts**: Fonts for UI design.
 - **VS Code**: Development environment.
-- **Google Fonts**: Fonts used in the UI design.
+
+---
 
 ## File Structure
-
-The project is divided into frontend and backend sections. Below is the directory structure:
 
 ### Frontend (`client`)
 
@@ -49,11 +57,11 @@ The project is divided into frontend and backend sections. Below is the director
 client/
 ├── public/
 ├── src/
-│   ├── components/       # Common components (e.g., FlexBetween, Friend)
-│   ├── scenes/           # Pages and business logic (e.g., homepage, login page)
-│   ├── state/            # Redux global state management
-│   ├── App.js            # Main application entry point
-│   ├── index.js          # ReactDOM rendering entry point
+│   ├── components/       # Shared components (e.g., FlexBetween, Friend, etc.)
+│   ├── scenes/           # Pages and UI logic (e.g., homepage, profile page)
+│   ├── state/            # Redux state management
+│   ├── App.js            # Main app entry point
+│   ├── index.js          # ReactDOM entry point
 ├── .gitignore
 ├── package.json
 ```
@@ -62,26 +70,18 @@ client/
 
 ```
 server/
-├── controllers/          # Business logic (e.g., users, posts)
+├── controllers/          # Business logic for users and posts
 ├── middleware/           # Middleware (e.g., authentication)
-├── models/               # Database models (e.g., user, post)
-├── routes/               # API routes
+├── models/               # Database models (User, Post)
+├── routes/               # API endpoints
 ├── public/assets         # Static files
-├── .env                  # Environment variable configuration
+├── .env                  # Environment variables
 ├── index.js              # Server entry point
 ├── package.json
 ```
 
-## Features
+---
 
-- Full user authentication system.
-- Users can create, view, and like posts.
-- File upload and storage support.
-- Dark mode and responsive design for an enhanced user experience.
-
-## Project Demo
-
-> Add screenshots or GIFs demonstrating the project features here.
 
 ## How to Run
 
@@ -91,11 +91,11 @@ server/
 
 ### Steps:
 
-1. Clone the project:
+1. Clone the repository:
 
    ```bash
    git clone https://github.com/your-repository
-   cd your-project-directory
+   cd your-project
    ```
 
 2. Install dependencies:
@@ -110,66 +110,59 @@ server/
    npm install
    ```
 
-3. Set up the `.env` file:
-   Create a `.env` file in the `server` folder and add the required environment variables:
+3. Set up environment variables:
+   Create a `.env` file in the `server` directory and include the following:
 
    ```env
-   MONGO_URL=your-mongodb-connection-string
+   MONGO_URL=your-mongodb-url
    JWT_SECRET=your-jwt-secret
    PORT=5000
    ```
 
-4. Run the project:
+4. Run the application:
 
    ```bash
-   # Start the backend
+   # Start backend
    cd server
    npm start
    
-   # Start the frontend
+   # Start frontend
    cd ../client
    npm start
    ```
 
-5. Open your browser and navigate to `http://localhost:3000` to view the app.
+5. Access the application:
+   Open your browser and go to `http://localhost:3000`.
 
-## API Documentation
+---
 
-### User Authentication
+## Features in Detail
 
-- **Login**
+### User Management
 
-  - URL: `/api/auth/login`
+- **Login and Registration**:
+  - Secure authentication using JWT.
+  - Passwords are hashed for security.
 
-  - Method: POST
+- **Profile Customization**:
+  - Update name, profession, and location from the main page.
 
-  - Request Body:
+### Posts and Interactions
 
-    ```json
-    {
-      "email": "example@example.com",
-      "password": "yourpassword"
-    }
-    ```
+- Create posts with text and images.
+- Like and comment on posts.
+- Delete posts you own.
 
-  - Response:
+### Friend System
 
-    ```json
-    {
-      "token": "JWT_TOKEN",
-      "user": { "id": "123", "name": "John Doe" }
-    }
-    ```
+- Add and remove friends from your connections.
 
-## Contribution Guidelines
+### UI and Accessibility
 
-We welcome contributions! Here’s how you can contribute:
+- Toggle between dark mode and light mode.
+- Fully responsive design for mobile and desktop users.
 
-1. Fork this repository.
-2. Create a branch (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m 'Add your feature'`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Submit a pull request.
+---
 
 ## License
 
