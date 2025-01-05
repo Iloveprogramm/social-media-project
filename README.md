@@ -14,6 +14,19 @@ Here’s a preview of the login page:
 
 ![Login Page](client/public/assets/loginPage.png)
 
+### Register Page
+
+Here’s a preview of the register page:
+
+![Register Page](client/public/assets/registerPage.png)
+
+### Home Page
+
+Here’s a preview of the Home page:
+
+![Home Page](client/public/assets/HomePage.png)
+
+
 ---
 
 ### Key Features:
