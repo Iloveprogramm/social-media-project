@@ -4,6 +4,18 @@
 
 SocialAura is a full-stack social media application built with the MERN stack. It provides a modern, user-friendly interface for users to connect, share, and interact. Key features include user authentication, profile customization, post creation, dark mode, and more.
 
+---
+
+## Project Screenshots
+
+### Login Page
+
+Here’s a preview of the login page:
+
+![Login Page](client/public/assets/loginPage.png)
+
+---
+
 ### Key Features:
 
 - **User Authentication**: Login and registration functionality.
@@ -56,6 +68,7 @@ SocialAura is a full-stack social media application built with the MERN stack. I
 ```
 client/
 ├── public/
+│   └── assets/           # Static images and files
 ├── src/
 │   ├── components/       # Shared components (e.g., FlexBetween, Friend, etc.)
 │   ├── scenes/           # Pages and UI logic (e.g., homepage, profile page)
