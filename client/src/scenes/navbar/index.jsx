@@ -12,13 +12,10 @@ import {
 } from "@mui/material";
 import {
   Search,
-  Message,
   DarkMode,
   LightMode,
-  Notifications,
   Help,
   Menu,
-  Close,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
@@ -33,7 +30,6 @@ const Navbar = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();
-  const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
   const primaryLight = theme.palette.primary.light;
 
@@ -94,8 +90,6 @@ const Navbar = () => {
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: "25px", color: "#fff" }} />
-            <Notifications sx={{ fontSize: "25px", color: "#fff" }} />
             <Help sx={{ fontSize: "25px", color: "#fff" }} />
             <FormControl variant="standard" value={fullName}>
               <Select

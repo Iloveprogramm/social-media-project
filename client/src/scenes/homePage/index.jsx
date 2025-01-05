@@ -31,50 +31,24 @@ const HomePage = () => {
         <Box flexBasis={isNonMobileScreens ? "20%" : undefined}>
           <UserWidget userId={_id} picturePath={picturePath} />
           <Box mt="2rem">
-            {/* Navigation 部分 */}
+            {/* Quick Tips 模块 */}
             <WidgetWrapper>
               <Typography
                 variant="h6"
                 fontWeight="bold"
                 sx={{ marginBottom: "1rem" }}
               >
-                Navigation
+                Quick Tips
               </Typography>
               <Box>
-                <Typography
-                  sx={{
-                    cursor: "pointer",
-                    marginBottom: "0.5rem",
-                    "&:hover": { color: "primary.main" },
-                  }}
-                >
-                  Home
+                <Typography sx={{ marginBottom: "1rem" }}>
+                  🎉 Welcome back!
                 </Typography>
-                <Typography
-                  sx={{
-                    cursor: "pointer",
-                    marginBottom: "0.5rem",
-                    "&:hover": { color: "primary.main" },
-                  }}
-                >
-                  Notifications
+                <Typography sx={{ marginBottom: "1rem" }}>
+                  💡 Tip: Use hashtags (#) to make your posts more discoverable!
                 </Typography>
-                <Typography
-                  sx={{
-                    cursor: "pointer",
-                    marginBottom: "0.5rem",
-                    "&:hover": { color: "primary.main" },
-                  }}
-                >
-                  Messages
-                </Typography>
-                <Typography
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": { color: "primary.main" },
-                  }}
-                >
-                  Bookmarks
+                <Typography sx={{ marginBottom: "1rem" }}>
+                  🔔 Reminder: Check your notifications daily for updates!
                 </Typography>
               </Box>
             </WidgetWrapper>
@@ -86,7 +60,8 @@ const HomePage = () => {
           flexBasis={isNonMobileScreens ? "50%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={picturePath} />
+          {/* 传递 userId 确保发帖表单显示 */}
+          <MyPostWidget picturePath={picturePath} userId={_id} />
           <PostsWidget userId={_id} />
         </Box>
 

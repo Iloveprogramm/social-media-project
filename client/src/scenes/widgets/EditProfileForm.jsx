@@ -1,13 +1,25 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const EditProfileForm = ({ user, token, onSubmit }) => {
+  const loggedInUserId = useSelector((state) => state.user?._id); // 获取当前登录用户 ID
+
+  // 如果不是自己的主页，不渲染组件，提前判断权限
+  const isOwnProfile = loggedInUserId === user._id;
+
+  // 确保 Hook 调用在逻辑判断前
   const [formData, setFormData] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
     location: user.location,
     occupation: user.occupation,
   });
+
+  // 如果不是自己的主页，直接返回空组件（确保 Hook 调用顺序）
+  if (!isOwnProfile) {
+    return <></>;
+  }
 
   const handleChange = (e) => {
     setFormData({

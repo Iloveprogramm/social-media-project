@@ -25,36 +25,55 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 
-const MyPostWidget = ({ picturePath }) => {
+const MyPostWidget = ({ picturePath, userId }) => {
   const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
   const [post, setPost] = useState("");
   const { palette } = useTheme();
-  const { _id } = useSelector((state) => state.user);
+  const { _id } = useSelector((state) => state.user); // 当前登录用户 ID
   const token = useSelector((state) => state.token);
-  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
-  const mediumMain = palette.neutral.mediumMain;
-  const medium = palette.neutral.medium;
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)"); // 添加这行代码
+
+  // 如果未传递 userId，则默认使用当前登录用户的 ID
+  const currentUserId = userId || _id;
+
+  console.log("Logged-in User ID (_id):", _id);
+  console.log("Page User ID (userId):", userId);
+  console.log("Current User ID (currentUserId):", currentUserId);
+
+  // 判断是否允许渲染发帖组件
+  if (_id !== currentUserId) {
+    console.warn("MyPostWidget: User mismatch, hiding post widget.");
+    return null; // 如果不是自己的主页，不渲染发帖组件
+  }
 
   const handlePost = async () => {
     const formData = new FormData();
-    formData.append("userId", _id);
+    formData.append("userId", currentUserId);
     formData.append("description", post);
     if (image) {
       formData.append("picture", image);
       formData.append("picturePath", image.name);
     }
 
-    const response = await fetch(`http://localhost:3001/posts`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    const posts = await response.json();
-    dispatch(setPosts({ posts }));
-    setImage(null);
-    setPost("");
+    try {
+      const response = await fetch(`http://localhost:3001/posts`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (response.ok) {
+        const posts = await response.json();
+        dispatch(setPosts({ posts }));
+        setImage(null);
+        setPost("");
+      } else {
+        console.error("Failed to create post:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during post creation:", error);
+    }
   };
 
   return (
@@ -75,7 +94,7 @@ const MyPostWidget = ({ picturePath }) => {
       </FlexBetween>
       {isImage && (
         <Box
-          border={`1px solid ${medium}`}
+          border={`1px solid ${palette.neutral.medium}`}
           borderRadius="5px"
           mt="1rem"
           p="1rem"
@@ -122,10 +141,10 @@ const MyPostWidget = ({ picturePath }) => {
 
       <FlexBetween>
         <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
-          <ImageOutlined sx={{ color: mediumMain }} />
+          <ImageOutlined sx={{ color: palette.neutral.mediumMain }} />
           <Typography
-            color={mediumMain}
-            sx={{ "&:hover": { cursor: "pointer", color: medium } }}
+            color={palette.neutral.mediumMain}
+            sx={{ "&:hover": { cursor: "pointer", color: palette.neutral.medium } }}
           >
             Image
           </Typography>
@@ -134,23 +153,23 @@ const MyPostWidget = ({ picturePath }) => {
         {isNonMobileScreens ? (
           <>
             <FlexBetween gap="0.25rem">
-              <GifBoxOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Clip</Typography>
+              <GifBoxOutlined sx={{ color: palette.neutral.mediumMain }} />
+              <Typography color={palette.neutral.mediumMain}>Clip</Typography>
             </FlexBetween>
 
             <FlexBetween gap="0.25rem">
-              <AttachFileOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Attachment</Typography>
+              <AttachFileOutlined sx={{ color: palette.neutral.mediumMain }} />
+              <Typography color={palette.neutral.mediumMain}>Attachment</Typography>
             </FlexBetween>
 
             <FlexBetween gap="0.25rem">
-              <MicOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Audio</Typography>
+              <MicOutlined sx={{ color: palette.neutral.mediumMain }} />
+              <Typography color={palette.neutral.mediumMain}>Audio</Typography>
             </FlexBetween>
           </>
         ) : (
           <FlexBetween gap="0.25rem">
-            <MoreHorizOutlined sx={{ color: mediumMain }} />
+            <MoreHorizOutlined sx={{ color: palette.neutral.mediumMain }} />
           </FlexBetween>
         )}
 

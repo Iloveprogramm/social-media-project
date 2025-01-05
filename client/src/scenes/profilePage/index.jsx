@@ -10,9 +10,12 @@ import UserWidget from "scenes/widgets/UserWidget";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
-  const { userId } = useParams();
+  const { userId } = useParams(); // 从 URL 获取 userId
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+
+  // 调试日志
+  console.log("ProfilePage User ID (userId):", userId);
 
   const getUser = async () => {
     const response = await fetch(`http://localhost:3001/users/${userId}`, {
@@ -48,7 +51,8 @@ const ProfilePage = () => {
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={user.picturePath} />
+          {/* 将 userId 传递到 MyPostWidget */}
+          <MyPostWidget picturePath={user.picturePath} userId={userId} />
           <Box m="2rem 0" />
           <PostsWidget userId={userId} isProfile />
         </Box>
